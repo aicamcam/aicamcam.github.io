@@ -348,19 +348,25 @@ object-fit: contain;
 
 
 /* Loading */
-#loader_message {
-  position: absolute;
-  left: 50%;
-  top: 35%;
-}
-.loader {
-  position: absolute;
-  border: 16px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 16px solid #3498db;
+#loader_message {  
+  position: relative;
+  top: 38%;
   margin: auto;
-  left: 50%;
+  text-align: center;
+  display: block;
+  color: #858282;
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+.loader {
+  position: relative;
   top: 40%;
+  margin: auto;
+  display: block;     
+  border: 16px solid #858282;
+  border-radius: 50%;
+  border-top: 16px solid #407cf7;
   width: 120px;
   height: 120px;
   -webkit-animation: spin 2s linear infinite; /* Safari */
@@ -376,7 +382,6 @@ object-fit: contain;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 

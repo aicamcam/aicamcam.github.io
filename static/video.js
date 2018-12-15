@@ -9,15 +9,15 @@ var isRecordingRunning = false;
 var isSmartRecordingEnabled = false;
 var isAutoDownloadRunning = false;
 var isNavOpend = false;
-init()
-ctx.font = "200px Arial";
 
+init()
+
+// Utils
 function init() {
     start_webcam()
     setup_fullscreen();
 }
 
-// Utils
 function sleep (time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
@@ -186,7 +186,7 @@ function flipImage(img, ctx, width, height, flipH, flipV) {
 };
 
 async function load_model() {
-    open_loader("Object Detection Model is loading...")
+    open_loader("PERSON	DETECTION IS LOADING . . .");
     object_detection_model = await cocoSsd.load();
     close_loader()
 }
@@ -210,6 +210,15 @@ async function start_detection() {
     video.width = canvas.width = width;
     video.height = canvas.height = height;
     isObjectDetectionRunning = true;
+    // Box Style
+    var gradient = ctx.createLinearGradient(0, 0, 250, 0);
+    gradient.addColorStop("0", "red");
+    gradient.addColorStop("0.5" ,"magenta");
+    gradient.addColorStop("1.0", "blue");
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = 2;
+    // Text Style
+    ctx.font = "24px Arial";
     while(isObjectDetectionRunning){
         var img = document.getElementById('local-video');
         var predictions = await object_detection_model.detect(img);
@@ -217,6 +226,7 @@ async function start_detection() {
         ctx.beginPath();
         //flipImage(video, ctx, width, height, true, false);
         ctx.drawImage(video, 0, 0, width, height);
+
         predictions.forEach(value => {
             if (value['class'] == 'person') {
                 if (isSmartRecordingEnabled && !isRecordingRunning) {
@@ -228,8 +238,9 @@ async function start_detection() {
                 ymax = value['bbox'][3];
                 ctx.rect(xmin, ymin, xmax, ymax);
                 var class_score = value['class']+' '+value['score'].toFixed(2)
-                ctx.fillText(class_score, xmin+5, ymin+23);
-                ctx.stroke();
+                //ctx.fillText(class_score, xmin+5, ymin+23);
+                ctx.strokeText(class_score, xmin+5, ymin+25);
+                ctx.stroke()
                 last_detection_t = new Date()  
             }
         });  
