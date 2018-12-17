@@ -394,7 +394,7 @@ function IconSet_toggle(iconElement) {
 
 
 /// Recording ///
-const mediaSource = new MediaSource();
+//const mediaSource = new MediaSource();
 //mediaSource.addEventListener('sourceopen', handleSourceOpen, false);
 let mediaRecorder;
 let recordedBlobs;
@@ -471,8 +471,37 @@ function stop_recording() {
     record_end_t = new Date();
 }
 
-function save_recording() {
+var myBlob = (function () {
+    var key, o;
+    function myBlob(blob) {
+        var url;
+        this.blob = blob;
+        blob = null;
+        this.getURL = function () {
+            if (url) return url;
+            return url = URL.createObjectURL(this.blob);
+        };
+        this.dispose = function () {
+            if (url) url = URL.revokeObjectURL(url), undefined;
+            this.blob = null;
+        };
+    }
+    o = new Blob();
+    for (key in o)
+        (function (key) {
+            Object.defineProperty(myBlob.prototype, key, {
+                enumerable: true,
+                configurable: true,
+                get: function () {return this.blob[key];}
+            });
+        }(key));
+    o = key = undefined;
+    return myBlob;
+}());
+
+function mem_leak_test() {
     const superBuffer = new Blob(recordedBlobs, {type: 'video/webm'});
+    console.log(superBuffer)
     const src_url = window.URL.createObjectURL(superBuffer);
     const mini_video_box = document.createElement('div');
     mini_video_box.classList.add('mini-video-box');
@@ -489,13 +518,81 @@ function save_recording() {
 
     // video
     var mini_video_new = document.createElement('video');
+    mini_video_new.id = mini_video_box_id+'_video';
     mini_video_new.classList.add('mini-video');
-    var source = document.createElement('source');
-    source.src = src_url;
-    source.type = 'video/webm; codecs="vp8"';
+    mini_video_new.src = src_url;
+    mini_video_new.type = 'video/webm; codecs="vp8"';
+    
+    //var source = document.createElement('source');
+    //source.src = src_url;
+    //source.type = 'video/webm; codecs="vp8"';
     mini_video_new.controls = true;
     mini_video_new.preload = "none";
-    mini_video_new.appendChild(source);
+    //mini_video_new.appendChild(source);
+    mini_video_box.appendChild(mini_video_new);
+    
+    // download button
+    const download_button = document.createElement('a');
+    download_button.classList.add('download-button');
+    download_button.innerHTML = "Download";  
+    download_button.href = src_url;
+    download_name = start_time+'-'+end_time+'.webm'
+    download_button.download = download_name;
+    mini_video_box.appendChild(download_button);
+    // remove button
+    const remove_button = document.createElement('a');
+    remove_button.classList.add('remove-button');
+    remove_button.innerHTML = "Remove";
+    remove_button.onclick = function () { remove_recording(mini_video_box_id);};    
+    remove_button.href="#";
+    mini_video_box.appendChild(remove_button);
+    
+    var mini_video_boxes = document.getElementById("mini-video-boxes");
+    mini_video_boxes.prepend(mini_video_box);
+
+    mini_video_counter_update();
+    if (isAutoDownloadRunning) {        
+        setTimeout(() => {
+            download_button.click();
+            remove_button.click();
+        }, 100);
+    }    
+    //console.log("---delete---");
+    //sleep(1000);
+    //mini_video_new.removeAttribute('src'); // empty source;
+    //console.log("---______---");
+}
+
+function save_recording() {
+    const superBuffer = new Blob(recordedBlobs, {type: 'video/webm'});
+    console.log(superBuffer)
+    const src_url = window.URL.createObjectURL(superBuffer);
+    const mini_video_box = document.createElement('div');
+    mini_video_box.classList.add('mini-video-box');
+    const start_time = format_date(record_start_t);
+    const end_time = format_date(record_end_t);
+    var mini_video_box_id = 'video_'+format_date_flat(record_start_t)+'_'+format_date_flat(record_end_t);
+    mini_video_box.id = mini_video_box_id;
+       
+    //title
+    const video_title = document.createElement('p');
+    video_title.classList.add('title');
+    video_title.innerHTML = "Time: "+start_time+" ~ "+end_time;
+    mini_video_box.appendChild(video_title);
+
+    // video
+    var mini_video_new = document.createElement('video');
+    mini_video_new.id = mini_video_box_id+'_video';
+    mini_video_new.classList.add('mini-video');
+    mini_video_new.src = src_url;
+    mini_video_new.type = 'video/webm; codecs="vp8"';
+    
+    //var source = document.createElement('source');
+    //source.src = src_url;
+    //source.type = 'video/webm; codecs="vp8"';
+    mini_video_new.controls = true;
+    mini_video_new.preload = "none";
+    //mini_video_new.appendChild(source);
     mini_video_box.appendChild(mini_video_new);
     
     // download button
@@ -528,11 +625,15 @@ function save_recording() {
 
 function remove_recording(mini_video_box_id) {
     console.log(mini_video_box_id);
-    mini_video_box = document.getElementById(mini_video_box_id);
-    window.URL.revokeObjectURL(mini_video_box.childNodes[1].currentSrc);
-    document.getElementById(mini_video_box_id).remove();
+    var mini_video_box = document.getElementById(mini_video_box_id);
+    var mini_video = document.getElementById(mini_video_box_id+'_video');
+    window.URL.revokeObjectURL(mini_video.src);    
+    mini_video.removeAttribute('src'); // empty source
+    mini_video.parentNode.removeChild(mini_video);
+    mini_video_box.parentNode.removeChild(mini_video_box);
     mini_video_counter_update();
 } 
+//121,872K
 
 function download_all() {
     boxes = document.getElementById("mini-video-boxes");
