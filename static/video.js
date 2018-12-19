@@ -511,8 +511,8 @@ function save_recording() {
     const remove_button = document.createElement('a');
     remove_button.classList.add('remove-button');
     remove_button.innerHTML = "Remove";
-    //remove_button.onclick = remove_recording;
-    remove_button.addEventListener('onclick', remove_recording);
+    remove_button.onclick = remove_recording;
+    //remove_button.addEventListener('onclick', remove_recording);
 
     remove_button.ended = function() {console.log("remove button ended");}
     remove_button.href="#";
