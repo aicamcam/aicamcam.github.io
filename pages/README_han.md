@@ -16,7 +16,7 @@ Chrome - 71.0.3578.98
 #### 1. 환경 설정
 <img src="images/setting.png" width="366" height="308" />
 
-크롬 브리우져 "Webcam" 사용 허용해 주세요.  
+크롬 브리우져 "Camera" 사용 허용해 주세요.  
 "자동 비디오 다운로드" 기능을 사용하시려면, 크롬 브라우져 "Automatic Downloads" 기능도 허용해 주세요.  
 
 #### 2. Object detection  
