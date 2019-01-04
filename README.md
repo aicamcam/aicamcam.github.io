@@ -1,7 +1,7 @@
 # [aicamcam.github.io](https://aicamcam.github.io)  
  - Smart webcam service
  - Object(person/dog/cat) detection and record video
- - Running in off-line after load object detection model
+ - Off-line running after loading object detection model
  - Powered by HTML5, Tensorflow.js  
  
 [한국어 설명](pages/README_han.md)
