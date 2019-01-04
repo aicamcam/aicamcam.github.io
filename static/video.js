@@ -1,14 +1,11 @@
 // Grab elements, create settings, etc.
-var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext('2d');
-var video = document.getElementById('local-video');
-var object_detection_model = null;
-var isObjectDetectionRunning = false;
-var isObjectDetectionShowing = false;
-var isRecordingRunning = false;
-var isSmartRecordingEnabled = false;
-var isAutoDownloadRunning = false;
-var isNavOpend = false;
+let object_detection_model = null;
+let isObjectDetectionRunning = false;
+let isObjectDetectionShowing = false;
+let isRecordingRunning = false;
+let isSmartRecordingEnabled = false;
+let isAutoDownloadRunning = false;
+let isNavOpend = false;
 
 init()
 
@@ -22,27 +19,30 @@ function sleep (time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
 
-function trace(text) {
-    // This function is used for logging.
-    if (text[text.length - 1] === '\n') {
-      text = text.substring(0, text.length - 1);
-    }
-    if (window.performance) {
-      var now = (window.performance.now() / 1000).toFixed(3);
-      console.log(now + ': ' + text);
-    } else {
-      console.log(text);
-    }
+function format_date(date) {
+    let d = new Date(date);
+    let year = d.getFullYear();
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    let hour = '' + d.getHours();
+    let minute = '' + d.getMinutes();
+    let second = '' + d.getSeconds();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    if (hour.length < 2) hour = '0' + hour;
+    if (minute.length < 2) minute = '0' + minute;
+    if (second.length < 2) second = '0' + second;
+
+    return year+'/'+month+'/'+day+'_'+hour+':'+minute+':'+second;
 };
 
-function format_date(date) {
-    var d = new Date(date);
-    year = d.getFullYear();
-    month = '' + (d.getMonth() + 1);
-    day = '' + d.getDate();
-    hour = '' + d.getHours();
-    minute = '' + d.getMinutes();
-    second = '' + d.getSeconds();
+function format_date_string(date) {
+    let year = date.substring(0, 4);
+    let month = date.substring(4, 6);
+    let day = date.substring(6, 8);
+    let hour = date.substring(8, 10);
+    let minute = date.substring(10, 12);
+    let second = date.substring(12, 14);
     if (month.length < 2) month = '0' + month;
     if (day.length < 2) day = '0' + day;
     if (hour.length < 2) hour = '0' + hour;
@@ -53,13 +53,13 @@ function format_date(date) {
 };
 
 function format_date_flat(date) {
-    var d = new Date(date);
-    year = d.getFullYear();
-    month = '' + (d.getMonth() + 1);
-    day = '' + d.getDate();
-    hour = '' + d.getHours();
-    minute = '' + d.getMinutes();
-    second = '' + d.getSeconds();
+    let d = new Date(date);
+    let year = d.getFullYear();
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    let hour = '' + d.getHours();
+    let minute = '' + d.getMinutes();
+    let second = '' + d.getSeconds();
     if (month.length < 2) month = '0' + month;
     if (day.length < 2) day = '0' + day;
     if (hour.length < 2) hour = '0' + hour;
@@ -72,13 +72,13 @@ function format_date_flat(date) {
 ///
 /// LOADER ///
 function open_loader(text) {
-    loader_modal = document.getElementById("loader_modal");
+    let loader_modal = document.getElementById("loader_modal");
     document.getElementById("loader_message").innerHTML = text;
     loader_modal.style.display = "block";
 }
 
 function close_loader() {
-    loader_modal = document.getElementById("loader_modal");
+    let loader_modal = document.getElementById("loader_modal");
     loader_modal.style.display = "none";
 }
 ///
@@ -98,11 +98,8 @@ function closeNav() {
     isNavOpend = false;
 }
 
-function mini_video_counter_update() {
-    boxes = document.getElementById("mini-video-boxes");
-    count = boxes.children.length;
-    console.log(count)
-    document.getElementById("mini-video-counter").innerText = count;
+function mini_video_counter_update() {    
+    document.getElementById("mini-video-counter").innerText = document.getElementById("mini-video-boxes").children.length;
 }
 
 ///
@@ -156,9 +153,13 @@ function toggleSmartRecording_() {
 };
 
 function start_smart_recording() {
-    isSmartRecordingEnabled = true;
-    start_detection();
-    document.getElementById("smart-recording").classList.add("on");
+    if (!isSmartRecordingEnabled) {
+        isSmartRecordingEnabled = true;
+        start_detection();
+        document.getElementById("smart-recording").classList.add("on");
+    }else{
+        console.log("start_smart_recording is already running");
+    }
 }
 
 function stop_smart_recording() {
@@ -174,10 +175,10 @@ function stop_smart_recording() {
 
 // OBJECT DETECTION
 function flipImage(img, ctx, width, height, flipH, flipV) {
-    var scaleH = flipH ? -1 : 1, // Set horizontal scale to -1 if flip horizontal
-        scaleV = flipV ? -1 : 1, // Set verical scale to -1 if flip vertical
-        posX = flipH ? width * -1 : 0, // Set x position to -100% if flip horizontal 
-        posY = flipV ? height * -1 : 0; // Set y position to -100% if flip vertical
+    let scaleH = flipH ? -1 : 1; // Set horizontal scale to -1 if flip horizontal
+    let scaleV = flipV ? -1 : 1; // Set verical scale to -1 if flip vertical
+    let posX = flipH ? width * -1 : 0; // Set x position to -100% if flip horizontal 
+    let posY = flipV ? height * -1 : 0; // Set y position to -100% if flip vertical
     
     ctx.save(); // Save the current state
     ctx.scale(scaleH, scaleV); // Set scale to flip the image
@@ -195,23 +196,28 @@ async function start_detection() {
     if (object_detection_model==null) {
         await load_model()
     }
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+    let video = document.getElementById('local-video');
     let last_detection_t;
-    var window_height = window.innerHeight;
-    var window_width = window.innerWidth;
-    var cam_height = video.videoHeight;
-    var cam_width = video.videoWidth;
+    let window_height = window.innerHeight;
+    let window_width = window.innerWidth;
+    let cam_height = video.videoHeight;
+    let cam_width = video.videoWidth;
+    let width;
+    let height;
     if (window_height > window_width) {
-        var width = window_width;
-        var height = window_width * cam_height/cam_width;    
+        width = window_width;
+        height = window_width * cam_height/cam_width;    
     }else{
-        var width = window_height * cam_width/cam_height;
-        var height = window_height;
+        width = window_height * cam_width/cam_height;
+        height = window_height;
     }
     video.width = canvas.width = width;
     video.height = canvas.height = height;
     isObjectDetectionRunning = true;
     // Box Style
-    var gradient = ctx.createLinearGradient(0, 0, 250, 0);
+    let gradient = ctx.createLinearGradient(0, 0, 250, 0);
     gradient.addColorStop("0", "red");
     gradient.addColorStop("0.5" ,"magenta");
     gradient.addColorStop("1.0", "blue");
@@ -219,32 +225,30 @@ async function start_detection() {
     ctx.lineWidth = 2;
     // Text Style
     ctx.font = "24px Arial";
-    while(isObjectDetectionRunning){
-        var img = document.getElementById('local-video');
-        var predictions = await object_detection_model.detect(img);
+    while(isObjectDetectionRunning) {
+        let predictions = await object_detection_model.detect(video);
         ctx.clearRect(0, 0, width, height);
         ctx.beginPath();
         //flipImage(video, ctx, width, height, true, false);
         ctx.drawImage(video, 0, 0, width, height);
-
         predictions.forEach(value => {
             if (value['class'] == 'person') {
                 if (isSmartRecordingEnabled && !isRecordingRunning) {
                     start_recording();
                 }
-                xmin = value['bbox'][0];
-                ymin = value['bbox'][1];
-                xmax = value['bbox'][2];
-                ymax = value['bbox'][3];
+                let xmin = value['bbox'][0];
+                let ymin = value['bbox'][1];
+                let xmax = value['bbox'][2];
+                let ymax = value['bbox'][3];
                 ctx.rect(xmin, ymin, xmax, ymax);
-                var class_score = value['class']+' '+value['score'].toFixed(2)
-                //ctx.fillText(class_score, xmin+5, ymin+23);
+                let class_score = value['class']+' '+value['score'].toFixed(2)
+                ctx.fillText(class_score, xmin+5, ymin+23);
                 ctx.strokeText(class_score, xmin+5, ymin+25);
                 ctx.stroke()
                 last_detection_t = new Date()  
             }
         });  
-        detection_interval = (new Date() - last_detection_t)/1000; 
+        let detection_interval = (new Date() - last_detection_t)/1000; 
         // If there is nothing detected during 5 seconds, save recording.
         if (isSmartRecordingEnabled && isRecordingRunning && detection_interval > 3) {
             stop_recording();
@@ -265,16 +269,16 @@ async function show_dectection() {
         }    
         start_detection();
     }
-    console.log("start_detection_and_show")
-    video.setAttribute('hidden', "");
-    canvas.removeAttribute('hidden');
+    //console.log("start_detection_and_show")
+    document.getElementById('local-video').setAttribute('hidden', "");
+    document.getElementById('canvas').removeAttribute('hidden');
     document.getElementById("object-detection").classList.add('on');
 }
 
 function hide_detection() {
     isObjectDetectionShowing = false;
-    video.removeAttribute('hidden');
-    canvas.setAttribute('hidden', "");
+    document.getElementById('local-video').removeAttribute('hidden');
+    document.getElementById('canvas').setAttribute('hidden', "");
     document.getElementById("object-detection").classList.remove('on');
 }
 
@@ -324,7 +328,6 @@ function isFullScreen() {
 };
 
 function enter_fullscreen() {
-    trace('Entering fullscreen.');
     document.querySelector('svg#fullscreen title').textContent =
         'Exit fullscreen';
     document.body.requestFullScreen();
@@ -332,7 +335,6 @@ function enter_fullscreen() {
 };
 
 function exit_fullscreen() {
-    trace('Exiting fullscreen.');
     document.querySelector('svg#fullscreen title').textContent =
         'Enter fullscreen';
     document.cancelFullScreen();
@@ -349,6 +351,7 @@ function toggleFullScreen_() {
 // Webcam  
 function start_webcam() {
     // Get access to the camera!
+    let video = document.getElementById('local-video');
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         // Not adding `{ audio: true }` since we only want video now
         navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
@@ -361,20 +364,22 @@ function start_webcam() {
 };
 
 function stop_webcam() {
+    let video = document.getElementById('local-video');
     if (video.srcObject == null) {
-        trace("Camera is not enabled");
         return false
     }
-    tracks = video.srcObject.getTracks();
+    let tracks = video.srcObject.getTracks();
     tracks.forEach(function(track) {
         track.stop();
     });
     video.srcObject = null;
+    tracks = null;
+    video = null;
     document.getElementById("webcam").classList.remove('on');
 }
 
 function toggleWebcam_()  {
-    if (video.srcObject == null) {
+    if (document.getElementById('local-video').srcObject == null) {
         start_webcam();
     }else{
         stop_webcam();
@@ -394,207 +399,191 @@ function IconSet_toggle(iconElement) {
 
 
 /// Recording ///
-//const mediaSource = new MediaSource();
-//mediaSource.addEventListener('sourceopen', handleSourceOpen, false);
 let mediaRecorder;
 let recordedBlobs;
-let record_start_t;
 
-//function handleSourceOpen(event) {
-//    console.log('MediaSource opened');
-//    sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
-//    console.log('Source buffer: ', sourceBuffer);
-//  }
+function start_recording() {
+    if (isRecordingRunning){
+        return 
+    }
+    isRecordingRunning = true;
+    recordedBlobs = [];
+    if (mediaRecorder == undefined) {
+        let options = {mimeType: 'video/webm'};
+        let stream = document.getElementById('local-video').captureStream();
+        //let stream = document.getElementById('canvas').captureStream();
+        try {
+            mediaRecorder = new MediaRecorder(stream, options);
+          } catch (e0) {
+            //console.log('Unable to create MediaRecorder with options Object: ', e0);
+            try {
+              options = {mimeType: 'video/webm,codecs=vp9'};
+              mediaRecorder = new MediaRecorder(stream, options);
+            } catch (e1) {
+              //console.log('Unable to create MediaRecorder with options Object: ', e1);
+              try {
+                options = 'video/vp8'; // Chrome 47
+                mediaRecorder = new MediaRecorder(stream, options);
+              } catch (e2) {
+                alert('MediaRecorder is not supported by this browser.\n\n' +
+                  'Try Firefox 29 or later, or Chrome 47 or later, ' +
+                  'with Enable experimental Web Platform features enabled from chrome://flags.');
+                console.error('Exception while creating MediaRecorder:', e2);
+                return;
+              }
+            }
+        }
+        mediaRecorder.onstop = handleStop;
+        mediaRecorder.ondataavailable = handleDataAvailable;    
+    }
+    mediaRecorder.start()
+    
+    let record_start_t = new Date()
+    let mini_video_box = document.createElement('div');
+    mini_video_box.id = 'video_'+format_date_flat(record_start_t);
+    mini_video_box.classList.add('mini-video-box');
 
+    let video_title = document.createElement('p');
+    video_title.classList.add('title')  ;
+    video_title.innerHTML = "Time: "+format_date(record_start_t)+" ~ ";
+    mini_video_box.appendChild(video_title);
+    document.getElementById("mini-video-boxes").prepend(mini_video_box)
+    document.getElementById("recording").classList.add("on");
+    auto_restart();
+}
+  
 function handleDataAvailable(event) {
     if (event.data && event.data.size > 0) {
       recordedBlobs.push(event.data);
     }
 }
 
+function stop_recording() {
+    mediaRecorder.stop();
+    isRecordingRunning = false;    
+    document.getElementById("recording").classList.remove("on");
+}
+
 function handleStop(event) {
-    console.log('Recorder stopped: ', event);
     save_recording();
 }
 
-function start_recording() {
-    if (isRecordingRunning){
-        return 
-    }
-
-    let options = {mimeType: 'video/webm'};
-    let stream;
-    if (isObjectDetectionShowing) {
-        stream = canvas.captureStream();
-    }else{
-        stream = video.captureStream();
-    }
-    recordedBlobs = [];
-    try {
-      mediaRecorder = new MediaRecorder(stream, options);
-    } catch (e0) {
-      console.log('Unable to create MediaRecorder with options Object: ', e0);
-      try {
-        options = {mimeType: 'video/webm,codecs=vp9'};
-        mediaRecorder = new MediaRecorder(stream, options);
-      } catch (e1) {
-        console.log('Unable to create MediaRecorder with options Object: ', e1);
-        try {
-          options = 'video/vp8'; // Chrome 47
-          mediaRecorder = new MediaRecorder(stream, options);
-        } catch (e2) {
-          alert('MediaRecorder is not supported by this browser.\n\n' +
-            'Try Firefox 29 or later, or Chrome 47 or later, ' +
-            'with Enable experimental Web Platform features enabled from chrome://flags.');
-          console.error('Exception while creating MediaRecorder:', e2);
-          return;
-        }
-      }
-    }
-    console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
-
-    mediaRecorder.onstop = handleStop;
-    mediaRecorder.ondataavailable = handleDataAvailable;
-    mediaRecorder.start(100); // collect 100ms of data
-    isRecordingRunning = true;
-    record_start_t = new Date()
-    console.log('MediaRecorder started', mediaRecorder);
-    document.getElementById("recording").classList.add("on");
-    auto_saving()
-    return true;
-}
-  
-function stop_recording() {
-    isRecordingRunning = false;    
-    mediaRecorder.stop();
-    document.getElementById("recording").classList.remove("on");
-    record_end_t = new Date();
-}
-
 function save_recording() {
-    const superBuffer = new Blob(recordedBlobs, {type: 'video/webm'});
-    console.log(superBuffer)
-    const src_url = window.URL.createObjectURL(superBuffer);
-    const mini_video_box = document.createElement('div');
-    mini_video_box.classList.add('mini-video-box');
-    const start_time = format_date(record_start_t);
-    const end_time = format_date(record_end_t);
-    var mini_video_box_id = 'video_'+format_date_flat(record_start_t)+'_'+format_date_flat(record_end_t);
-    mini_video_box.id = mini_video_box_id;
-       
-    //title
-    const video_title = document.createElement('p');
-    video_title.classList.add('title');
-    video_title.innerHTML = "Time: "+start_time+" ~ "+end_time;
-    mini_video_box.appendChild(video_title);
-
-    // video
-    var mini_video_new = document.createElement('video');
-    mini_video_new.id = mini_video_box_id+'_video';
-    mini_video_new.classList.add('mini-video');
-    mini_video_new.src = src_url;
-    mini_video_new.type = 'video/webm; codecs="vp8"';
-    mini_video_new.controls = true;
-    mini_video_new.preload = "none";
-    //mini_video_new.appendChild(source);
-    mini_video_box.appendChild(mini_video_new);
+    let mini_video_box = document.getElementById("mini-video-boxes").firstChild
+    let start_time = format_date_string(mini_video_box.id.substring(6));
+    let record_end_t = new Date();
+    let end_time = format_date(record_end_t);
+    let title = mini_video_box.getElementsByClassName("title")[0]
+    title.innerHTML = title.innerHTML + end_time
     
-    // download button
-    const download_button = document.createElement('a');
+    let superBuffer = new Blob(recordedBlobs, {type: 'video/webm'});
+    let src_url = window.URL.createObjectURL(superBuffer);
+
+    let download_button = document.createElement('a');
     download_button.classList.add('download-button');
     download_button.innerHTML = "Download";  
     download_button.href = src_url;
-    download_name = start_time+'-'+end_time+'.webm'
-    download_button.download = download_name;
-    mini_video_box.appendChild(download_button);
-    // remove button
-    const remove_button = document.createElement('a');
+    download_button.download = start_time+'-'+end_time+'.webm';
+    
+    let remove_button = document.createElement('a');
     remove_button.classList.add('remove-button');
     remove_button.innerHTML = "Remove";
     remove_button.onclick = remove_recording;
-    //remove_button.addEventListener('onclick', remove_recording);
-
-    remove_button.ended = function() {console.log("remove button ended");}
     remove_button.href="#";
-    mini_video_box.appendChild(remove_button);
-    //remove_button.removeEventListener('onclick', remove_recording);
-
-    
-    var mini_video_boxes = document.getElementById("mini-video-boxes");
-    mini_video_boxes.prepend(mini_video_box);
 
     mini_video_counter_update();
-    if (isAutoDownloadRunning) {        
+    if (isAutoDownloadRunning) {   
+        mini_video_box.appendChild(remove_button);     
         setTimeout(() => {
-            download_button.click();
+            download_button.click();    
             remove_button.click();
+            remove_button.onclick = null;
         }, 100);
-    }    
+    }else{
+        let mini_video_new = document.createElement('video');
+        mini_video_new.classList.add('mini-video');
+        mini_video_new.src = src_url;
+        mini_video_new.type = 'video/webm; codecs="vp8"';
+        mini_video_new.controls = true;
+        mini_video_new.preload = "none";
+        mini_video_box.appendChild(mini_video_new);
+        mini_video_box.appendChild(download_button);
+        mini_video_box.appendChild(remove_button);
+    } 
+    console.log("save_recording end");
 }
 
 function remove_recording() {
-    var mini_video_box = this.parentNode
-    var mini_video = mini_video_box.getElementsByClassName('mini-video')[0];
-    window.URL.revokeObjectURL(mini_video.src);    
-    mini_video.removeAttribute('src'); // empty source
-    mini_video.remove();
-    
-    //remove_button = mini_video_box.getElementsByClassName("remove-button")[0];
-    //console.log("remove_button.onclick:", remove_button.onclick)
-    this.removeEventListener('onclick', remove_recording);
+    let mini_video_box = this.parentNode
+    while (mini_video_box.firstChild) {
+        if (mini_video_box.firstChild.className == "mini-video") {
+            window.URL.revokeObjectURL(mini_video_box.firstChild.src);  
+            mini_video_box.firstChild.src= "";
+        }
+        if (mini_video_box.firstChild.className == "download-button") {
+            mini_video_box.firstChild.href= "";
+        }
+        old_node = mini_video_box.removeChild(mini_video_box.firstChild);
+        delete old_node;
+    }
     mini_video_box.remove();
-    this.remove();
+    console.log("remove_recording");
     mini_video_counter_update();
 } 
-//121,872K
-//129812 -> 127404 -> 128424 -> 128608 -> 130364 -> 129856 -> 133092 -> 132020 -> 135172
-//137028/35536/30111 -> 
+
 function download_all() {
-    boxes = document.getElementById("mini-video-boxes");
-    box_list = boxes.children;
-    for (var i=0; i<box_list.length; i++) {
-        box = box_list[i];
-        download_button = box.getElementsByClassName("download-button")[0];
-        download_button.click();
+    let boxes = document.getElementById("mini-video-boxes");
+    let box_list = boxes.children;
+    for (let i=0; i<box_list.length; i++) {
+        box_list[i].getElementsByClassName("download-button")[0].click();        
     }
 }
 
 function remove_all() {
-    boxes = document.getElementById("mini-video-boxes");
-    box_list = boxes.children;
-    for (var i=box_list.length-1; i>=0; i--) {
-        box = box_list[i];
-        remove_button = box.getElementsByClassName("remove-button")[0];
-        remove_button.click();
+    let boxes = document.getElementById("mini-video-boxes");
+    let box_list = boxes.children;
+    for (let i=box_list.length-1; i>=0; i--) {
+        box_list[i].getElementsByClassName("remove-button")[0].click();        
     }
 }
 
 function auto_download_and_remove_toggle_() {
-    auto_download_button = document.getElementById("auto-download-button");
+    let auto_download_button = document.getElementById("auto-download-button");
     if(isAutoDownloadRunning) {
         isAutoDownloadRunning = false;  
         auto_download_button.classList.remove("activate");
     }else{
         isAutoDownloadRunning = true;
         auto_download_button.classList.add("activate");
-
     }
 }
 
-async function restart_recording() {
-    stop_recording()
-    await sleep(100);
-    start_recording()
-}
+//async function auto_restart() {
+//    let video_duration = document.getElementById("video-duration").value;
+//    console.log(video_duration, format_date(new Date()))
+//    await sleep(video_duration*1000);
+//    restart_recording();
+//}
 
-async function auto_saving() {
+async function auto_restart() {
+    let video_duration = document.getElementById("video-duration").value;
+    console.log(video_duration, format_date(new Date()))
+    record_start_t = new Date() 
     while(isRecordingRunning) {
         duration = (new Date() - record_start_t) /1000;
-        if (duration > 60) {
+        if (duration > video_duration) {
             restart_recording()
+            break;
         }
         await sleep(1000);
     }
+    console.log("auto_restart end:", record_start_t)
+}
+
+async function restart_recording() {
+    stop_recording();
+    await sleep(100);
+    start_recording();
 }
 
 function toggleRecording_() {

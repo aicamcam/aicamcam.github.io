@@ -7,5 +7,6 @@ bp = Blueprint('aicamcam', __name__)
 
 @bp.route('/')
 def index():
+    #return render_template('test.html')
     return render_template('index.html')
 
