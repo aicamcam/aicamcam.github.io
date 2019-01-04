@@ -187,7 +187,7 @@ function flipImage(img, ctx, width, height, flipH, flipV) {
 };
 
 async function load_model() {
-    open_loader("PERSON	DETECTION IS LOADING . . .");
+    open_loader("OBJECT	DETECTION IS LOADING . . .");
     object_detection_model = await cocoSsd.load();
     close_loader()
 }
@@ -232,7 +232,7 @@ async function start_detection() {
         //flipImage(video, ctx, width, height, true, false);
         ctx.drawImage(video, 0, 0, width, height);
         predictions.forEach(value => {
-            if (value['class'] == 'person') {
+            if (['person', 'cat', 'dog'].indexOf(value['class']) > -1) {
                 if (isSmartRecordingEnabled && !isRecordingRunning) {
                     start_recording();
                 }
