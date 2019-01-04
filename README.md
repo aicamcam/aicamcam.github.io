@@ -15,14 +15,14 @@ Please allow chrome to use "Webcam".
 If you want to auto download for recorded video, Please allow "Automatic Downloads".   
 
 #### 2. Object detection  
-<img src="docs/images/side_button_od.png" width="230" height="86" />
+<img src="docs/images/side_button_od.png" width="160" height="60" />
 
 To test object detection, click "Test Object Detection" button. 
 Loading TFJS model take 1~2 minutes.  
 This button draw bounding box to video. 
 
 #### 3. Smart Recording  
-<img src="docs/images/side_button_smart_recording.png" height="86" />
+<img src="docs/images/side_button_smart_recording.png" height="60" />
 
 To start smart recording, click "Smart Recording" Button.  
 During smart recording mode,   
@@ -31,14 +31,14 @@ If the object disapear for 3 seconds, Recording is stoped.
 If recording is continued for 1 minute, Video is created and recording is re-started.  
 
 #### 4. Recording 
-<img src="docs/images/side_button_recording.png" height="86" />
+<img src="docs/images/side_button_recording.png" height="60" />
 
 To start recording, click "Recording" Button.  
 This button start recording regardless of object detection. 
 If recording is continued for 1 minute, Video is created and recording is re-started.  
 
 #### 5. Navigator
-<img src="docs/images/hamburger_button.png" height="86" />
+<img src="docs/images/hamburger_button.png" height="60" />
 
 ##### 5.1. video
 Click "hamberger" button and check out the created video.   
@@ -47,7 +47,7 @@ The video hold system memory until user remove it.
 To save system memory, please download and remove video from navigator.   
 
 ##### 5.2. Auto download
-<img src="docs/images/auto_download.png" height="146" />
+<img src="docs/images/auto_download.png" height="100" />
 If you plan to use long-term recording, 
 Click auto download and remove button.  
 
