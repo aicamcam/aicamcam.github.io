@@ -2,7 +2,7 @@
  - 스마트 웹캠 서비스  
  - 객체인식(사람/강아지/고양이) 과 웹캠 녹화  
  - **Off-line 상태에서 사용 가능, 서비스 사용중 인터넷 필요 없음**
- - Tensorflow 모델 로딩후 Off-line 상태로 사용 
+ - Tensorflow 모델 로딩후 Off-line 상태로 사용 가능
  - HTML5와 Tensorflow.js 사용  
 
 [English](../README.md)  
