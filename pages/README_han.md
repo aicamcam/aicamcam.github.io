@@ -1,7 +1,7 @@
 # [aicamcam.github.io](https://aicamcam.github.io)  
  - 스마트 웹캠 서비스  
  - 객체인식(사람/강아지/고양이) 과 웹캠 녹화  
- - 객체인식 모델 로딩 이후 Off-line에서 사용 가능 
+ - Off-line 상태에서 사용 가능, 서버와 통신 필요 없음(객체인식 모델 로딩 제외)
  - HTML5와 Tensorflow.js 사용  
 
 [English](../README.md)  
