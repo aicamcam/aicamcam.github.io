@@ -1,7 +1,7 @@
 # aicamcam.github.io
 Smart webcam service. Object(person/dog/cat) detection and record video. Running without any server connection. Powered by HTML5, Tensorflow.js
 
-<img src="docs/images/aicamcam_capture.png" width="1200" height="675" />
+<img src="docs/images/aicamcam_capture.png" width="800" height="450" />
 
 
 ### Tested Environment
