@@ -16,7 +16,7 @@ Chrome - 71.0.3578.98
 #### 1. Configuration
 <img src="pages/images/setting.png" width="366" height="308" />
 
-Please allow chrome to use "Webcam".  
+Please allow chrome to use "Camera".  
 If you want to auto download for recorded video, Please allow "Automatic Downloads".   
 
 #### 2. Object detection  
