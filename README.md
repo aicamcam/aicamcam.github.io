@@ -2,7 +2,7 @@
  - Smart webcam service
  - Object(person/dog/cat) detection and recording video
  - **Running Locally without any server connection** 
- - After tensorflow.js model is loaded, no internet needed
+ - After tensorflow.js model is loaded, no server connection is needed
  - Powered by HTML5, Tensorflow.js  
  
 [한국어 설명](pages/README_han.md)
