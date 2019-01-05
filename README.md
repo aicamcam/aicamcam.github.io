@@ -3,7 +3,7 @@
  - Object(person/dog/cat) detection and recording video
  - **Running Locally without any server connection** 
  - After tensorflow.js model is loaded, no server connection is needed
- - Powered by HTML5, Tensorflow.js  
+ - Powered by HTML5, WebRTC, Tensorflow.js  
  
 [한국어 설명](pages/README_han.md)
 
