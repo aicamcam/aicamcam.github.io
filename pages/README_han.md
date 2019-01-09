@@ -7,8 +7,6 @@
 
 [English](../README.md)  
 
-<img src="images/aicamcam_capture.png" width="800" height="450" />
-
 
 ### 테스트 환경
 Chrome - 71.0.3578.98
