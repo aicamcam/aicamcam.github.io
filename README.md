@@ -7,9 +7,6 @@
  
 [한국어 설명](pages/README_han.md)
 
-<img src="pages/images/aicamcam_capture.png" width="800" height="450" />
-
-
 ### Tested Environment
 Chrome - 71.0.3578.98
  
