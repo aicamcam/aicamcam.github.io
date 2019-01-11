@@ -1,5 +1,5 @@
 # [aicamcam.github.io](https://aicamcam.github.io)  
- - Smart webcam service
+ - Webcam video recrding when object is detected
  - Object(person/dog/cat) detection and recording video
  - **Running Locally without any server connection** 
  - After tensorflow.js model is loaded, no server connection is needed
