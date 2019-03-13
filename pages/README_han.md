@@ -1,4 +1,6 @@
 # [aicamcam.github.io](https://aicamcam.github.io)  
+ ([TensorFlow.js gallery > Demos & Applications](https://github.com/tensorflow/tfjs/blob/master/GALLERY.md)에 추가된 프로젝트)
+
  - 스마트 웹캠 서비스  
  - 객체인식(사람/강아지/고양이) 후 웹캠 녹화  
  - **Off-line 상태에서 사용 가능, 서비스 사용중 인터넷 필요 없음**
