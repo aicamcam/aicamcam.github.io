@@ -1,4 +1,5 @@
-# [aicamcam.github.io](https://aicamcam.github.io)  
+# [aicamcam.github.io](https://aicamcam.github.io) 
+ (Project added to [TensorFlow.js gallery > Demos & Applications](https://github.com/tensorflow/tfjs/blob/master/GALLERY.md))
  - Webcam video recrding when object is detected
  - Object(person/dog/cat) detection and recording video
  - **Running Locally without any server connection** 
